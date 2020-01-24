@@ -7,6 +7,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
 
 import { GenericFormField } from '../models/generic-form-field';
 import { TableColumns } from '../models/table-columns';
+import { ConfigPagination } from '../models/config-pagination';
 
 import _ from 'lodash';
 
@@ -89,7 +90,7 @@ export class TableFilteredComponent implements OnInit, OnChanges {
   /*
    * Si es true, entonces las filas se podrán clickear y dispararán en elevento onSelectRow
    */
-  @Input() isRowClickeable: boolean = false;
+  @Input() isRowClickeable = false;
   /*
    * Se ejecuta cuando se clickea una fila del resultado
    */
@@ -97,7 +98,7 @@ export class TableFilteredComponent implements OnInit, OnChanges {
   /*
    * Paginación
    */
-  @Input() configPagination: any; // TODO: agregar modelo ConfigPagination
+  @Input() configPagination: ConfigPagination;
   /*
    * Se ejecuta cuando se cambia el paginado
    */
@@ -127,11 +128,11 @@ export class TableFilteredComponent implements OnInit, OnChanges {
 
   expandedElement: any;
 
-  dataSource: any;
+  dataSource: MatTableDataSource<TableColumns>;
 
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
-  lodash: any = _;
+  lodash = _;
 
   ngOnInit() {
     this.dataSource = new MatTableDataSource(this.data ? this.data : ELEMENT_DATA);
