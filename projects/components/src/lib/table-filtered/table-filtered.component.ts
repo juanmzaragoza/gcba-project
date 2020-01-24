@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ContentChild, TemplateRef, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter, ContentChild, TemplateRef, SimpleChanges, OnChanges } from '@angular/core';
 
 import {MatSort} from '@angular/material/sort';
 import {MatTableDataSource} from '@angular/material/table';
@@ -31,9 +31,9 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 @Component({
-  selector: 'app-table-filtered',
+  selector: 'lib-table-filtered',
   templateUrl: './table-filtered.component.html',
-  styleUrls: ['./table-filtered.component.css'],
+  styleUrls: ['./table-filtered.component.scss'],
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({height: '0px', minHeight: '0'})),
@@ -42,42 +42,42 @@ const ELEMENT_DATA: PeriodicElement[] = [
     ]),
   ],
 })
-export class TableFilteredComponent implements OnInit {
+export class TableFilteredComponent implements OnInit, OnChanges {
 
-  @Output() onUpdate: EventEmitter<any> = new EventEmitter<any>();
+  @Output() update: EventEmitter<any> = new EventEmitter<any>();
 
   @Input() displayedColumns: TableColumns[] = [
-    {name: 'position',key: 'position'},
-    {name: 'name',key: 'name'},
+    {name: 'position', key: 'position'},
+    {name: 'name', key: 'name'},
     {name: 'weight', key: 'weight'},
     {name: 'symbol', key: 'symbol'}
   ];
   _displayedColumns: string[];
 
-  @Input() _displayedData: any[];
+  @Input() data: any[];
   get displayedData(): any[] {
     // transform value for display
-    return this._displayedData;
+    return this.data;
   }
   @Input()
   set displayedData(displayedData: any[]) {
-    this._displayedData = displayedData;
-    this.dataSource = new MatTableDataSource(this._displayedData? this._displayedData:ELEMENT_DATA);
+    this.data = displayedData;
+    this.dataSource = new MatTableDataSource(this.data ? this.data : ELEMENT_DATA);
     this.dataSource.sort = this.sort;
   }
 
   /*
    * Si es true, muestra los filtros de búsqueda
    */
-  @Input('showFilters') showFilters: boolean = false;
+  @Input() showFilters = false;
   /*
    * Campos de los diferentes filtros
    */
-  @Input('filterFields') filterFields: GenericFormField[];
+  @Input() filterFields: GenericFormField[];
   /*
    * entrada que cuando los filtros estan activos, renderea botones al lado del submit
    */
-  @Input('extraFilterButtons') extraFilterButtons: GenericFormField[];
+  @Input() extraFilterButtons: GenericFormField[];
   /*
    * Se ejecuta cuando se ingresa algún dato a los filtros
    */
@@ -85,19 +85,19 @@ export class TableFilteredComponent implements OnInit {
   /*
    * entrada que indica que el botón se encuentra cargando
    */
-  @Input('filterLoading') filterLoading: boolean;
+  @Input() filterLoading: boolean;
   /*
    * Si es true, entonces las filas se podrán clickear y dispararán en elevento onSelectRow
    */
-  @Input('isRowClickeable') isRowClickeable: boolean = false;
+  @Input() isRowClickeable: boolean = false;
   /*
    * Se ejecuta cuando se clickea una fila del resultado
    */
-  @Output() onSelectRow: EventEmitter<any> = new EventEmitter<any>();
+  @Output() selectRow: EventEmitter<any> = new EventEmitter<any>();
   /*
    * Paginación
    */
-  @Input('configPagination') configPagination: any; //TODO: agregar modelo ConfigPagination
+  @Input() configPagination: any; // TODO: agregar modelo ConfigPagination
   /*
    * Se ejecuta cuando se cambia el paginado
    */
@@ -105,23 +105,23 @@ export class TableFilteredComponent implements OnInit {
   /*
    * Valido si es una acción o una columna normal
    */
-  @Input('expandable') expandable: boolean = false;
+  @Input() expandable = false;
   /*
    * Para atajar evento de click row en las acciones
    */
-  expansion: boolean = false;
+  expansion = false;
   /*
    * Se ejecuta cuando se expande la fila
    */
-  @Output() onExpandRow: EventEmitter<any> = new EventEmitter<any>();
+  @Output() expandRow: EventEmitter<any> = new EventEmitter<any>();
   /*
    * Permite clickear y expandir la fila presionando en cualquier espacio de la misma
    */
-  @Input('rowClickeable') rowClickeable: boolean = true;
+  @Input() rowClickable = true;
   /*
    * Cierra el expandible cuando pasa de false a true
    */
-  @Input('closeExpandible') closeExpandible: boolean = false;
+  @Input() closeExpandable = false;
 
   @ContentChild(TemplateRef, {static: true}) templateRef: TemplateRef<any>;
 
@@ -129,36 +129,41 @@ export class TableFilteredComponent implements OnInit {
 
   dataSource: any;
 
-  cuilmask = [/\d/, /\d/, '-', /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/];
-
   @ViewChild(MatSort, {static: true}) sort: MatSort;
 
   lodash: any = _;
 
   ngOnInit() {
-    this.dataSource = new MatTableDataSource(this._displayedData? this._displayedData:ELEMENT_DATA);
+    this.dataSource = new MatTableDataSource(this.data ? this.data : ELEMENT_DATA);
     this.dataSource.sort = this.sort;
 
-    this._displayedColumns = this.displayedColumns?
+    this._displayedColumns = this.displayedColumns ?
       _.map(
-        _.filter(this.displayedColumns,function(colF){ return !colF.notShow; }),
-        function(col) { return col.key})
+        _.filter(this.displayedColumns, (colF) => {
+          return !colF.notShow;
+        }),
+        (col) => {
+          return col.key;
+        })
       :
       ['position', 'name', 'weight', 'symbol'];
 
-    if(this.showFilters){
+    if (this.showFilters) {
       // armo campos para filtros
-      this.filterFields = _.map(_.filter(this.displayedColumns, function(f){ return f.filtrable; }),function(o){ return o.type; });
-      this.filterFields.push({name: 'submit', type:'submit', title:'Buscar', size:'span-1'});
-      if (this.extraFilterButtons && this.extraFilterButtons.length){
+      this.filterFields = _.map(_.filter(this.displayedColumns, (f) => {
+        return f.filtrable;
+      }), (o) => {
+        return o.type;
+      });
+      this.filterFields.push({name: 'submit', type: 'submit', title: 'Buscar', size: 'span-1'});
+      if (this.extraFilterButtons && this.extraFilterButtons.length) {
         this.filterFields = this.filterFields.concat(this.extraFilterButtons);
       }
-
     }
 
   }
 
-  filterChange(event){
+  filterChange(event) {
     this.onChangeFilter.emit(event);
   }
 
@@ -166,23 +171,23 @@ export class TableFilteredComponent implements OnInit {
    * Se dispara cuando se da click al encabezado de una columna para ordenarla.
    * @param event objeto con el nombre de la columna y el orden
    */
-  sortChange(event){
+  sortChange(event) {
     //console.log(event);
   }
 
-  selectRow(row){
-    this.onSelectRow.emit(row);
+  onSelectRow(row) {
+    this.selectRow.emit(row);
   }
 
-  changePage(event){
+  changePage(event) {
     this.onChangePage.emit(event);
   }
   /*
    * Cuando se ejecuta una accion a la derecha de la tabla
    */
-  onClickAction(event, action, element){
+  onClickAction(event, action, element) {
     this.expansion = true;
-    action.execute? action.execute(element):null;
+    action.execute ? action.execute(element) : null;
   }
   /*
    * Se ejecuta al clikear la fila
@@ -192,30 +197,30 @@ export class TableFilteredComponent implements OnInit {
   onClickRow(event, row){
     // busco alguno con el id == expander para ver si es un ampliador de contenido
     const path = event.path || event.composedPath();
-    const expander = _.filter(path,function(el){
-      return el.id === 'expander'
-    })
+    const expander = _.filter(path, (el) => {
+      return el.id === 'expander';
+    });
     /*
      * valido que sea una columna no accion
      * o que la accion sea de expandir y expandio
      */
-    if(this.expandable && (!this.expansion || expander.length)){
-      this.expandedElement = this.expandedElement === row || (!expander.length && this.rowClickeable)? null : row;
-      if(this.expandedElement){
-        this.onExpandRow.emit(this.expandedElement);
+    if (this.expandable && (!this.expansion || expander.length)) {
+      this.expandedElement = this.expandedElement === row || (!expander.length && this.rowClickable) ? null : row;
+      if (this.expandedElement) {
+        this.expandRow.emit(this.expandedElement);
       }
     }
     // si la columna era accion -> reseteo expansion
-    if(this.expansion){
+    if(this.expansion) {
       this.expansion = false;
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
     // cuando closeExpandible == true -> cierro
-    if(changes && changes.closeExpandible
-      && changes.closeExpandible.currentValue != changes.closeExpandible.previousValue
-      && changes.closeExpandible.currentValue){
+    if (changes && changes.closeExpandible
+      && changes.closeExpandible.currentValue !== changes.closeExpandible.previousValue
+      && changes.closeExpandible.currentValue) {
       this.expandedElement = null;
       this.expansion = false;
     }

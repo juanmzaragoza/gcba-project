@@ -8,6 +8,15 @@ GCBA frontend projects.
 The idea it's to have some projects, with functionality and style, that represent 
 to GCBA's firm  and comply with the UX.
 
+## Development
+
+* All dependencies of the project must be installed in the root project and then added
+manually inside this `package.json` as a "peerDependencies"
+
+* We have to increment the `package.json` version for every published version.
+
+* Don't forget tests!!!
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project components` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project components`.

@@ -1,8 +1,12 @@
 {
-  "name": "@gcba/components",
+  "name": "components",
   "version": "0.0.1",
   "peerDependencies": {
     "@angular/common": "^8.2.14",
-    "@angular/core": "^8.2.14"
+    "@angular/core": "^8.2.14",
+    "lodash": "^4.17.15",
+    "hammerjs": "^2.0.8",
+    "@angular/material": "^8.2.3",
+    "@angular/cdk": "~8.2.3"
   }
 }
