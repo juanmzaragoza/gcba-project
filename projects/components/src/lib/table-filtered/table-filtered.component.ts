@@ -90,7 +90,7 @@ export class TableFilteredComponent implements OnInit, OnChanges {
   /*
    * Si es true, entonces las filas se podrán clickear y dispararán en elevento onSelectRow
    */
-  @Input() isRowClickeable = false;
+  @Input() isRowClickable = false;
   /*
    * Se ejecuta cuando se clickea una fila del resultado
    */
@@ -195,7 +195,7 @@ export class TableFilteredComponent implements OnInit, OnChanges {
    * Valida que no sea una columna accion
    * En las acciones no expande !!!
    */
-  onClickRow(event, row){
+  onClickRow(event, row) {
     // busco alguno con el id == expander para ver si es un ampliador de contenido
     const path = event.path || event.composedPath();
     const expander = _.filter(path, (el) => {

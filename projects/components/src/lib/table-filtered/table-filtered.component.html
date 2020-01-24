@@ -51,11 +51,11 @@
         <!-- Row -->
         <tr mat-header-row *matHeaderRowDef="_displayedColumns"></tr>
         <tr mat-row
-            [style.cursor]="isRowClickeable? 'pointer':''"
+            [style.cursor]="isRowClickable? 'pointer':''"
             *matRowDef="let row; columns: _displayedColumns;"
             class="example-element-row"
             [class.example-expanded-row]="expandedElement === row"
-            (click)="isRowClickeable? onSelectRow(row):null; onClickRow($event,row); "></tr>
+            (click)="isRowClickable? onSelectRow(row):null; onClickRow($event,row); "></tr>
         <ng-container *ngIf="expandable">
           <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
         </ng-container>
