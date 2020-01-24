@@ -17,6 +17,11 @@ manually inside this `package.json` as a "peerDependencies"
 
 * Don't forget tests!!!
 
+* Execute `ng build components` for build components library, each time you update
+the library components code
+
+* Execute `ng generate component --project components` for add new components into library
+
 ## Code scaffolding
 
 Run `ng generate component component-name --project components` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project components`.
